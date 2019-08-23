@@ -11,11 +11,11 @@
 
 #include "TOP_CPlusPlusBase.h"
 
-class PixelSortTOP : public TOP_CPlusPlusBase
+class CppTOP : public TOP_CPlusPlusBase
 {
 public:
-    PixelSortTOP( const OP_NodeInfo* info );
-    virtual ~PixelSortTOP();
+    CppTOP( const OP_NodeInfo* info );
+    virtual ~CppTOP();
     
     virtual void    getGeneralInfo( TOP_GeneralInfo*, const OP_Inputs*, void* ) override;
     virtual void    execute( TOP_OutputFormatSpecs*, const OP_Inputs*, TOP_Context*, void* reserved1 ) override;

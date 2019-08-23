@@ -9,39 +9,39 @@
 #include <iostream>
 #include "CppTOP.hpp"
 
-PixelSortTOP::PixelSortTOP( const OP_NodeInfo* ) : m_mult(1.0f) {}
+CppTOP::CppTOP( const OP_NodeInfo* ) : m_mult(1.0f) {}
 
-PixelSortTOP::~PixelSortTOP() {}
+CppTOP::~CppTOP() {}
 
-void PixelSortTOP::getGeneralInfo(TOP_GeneralInfo* ginfo, const OP_Inputs* inputs, void* reserved1 )
+void CppTOP::getGeneralInfo(TOP_GeneralInfo* ginfo, const OP_Inputs* inputs, void* reserved1 )
 {
 	ginfo->cookEveryFrame = true;
 	ginfo->memPixelType = OP_CPUMemPixelType::RGBA32Float;
 }
 
-void PixelSortTOP::execute( TOP_OutputFormatSpecs* outputFormat, const OP_Inputs* inputs, TOP_Context* context, void *reserved1)
+void CppTOP::execute( TOP_OutputFormatSpecs* outputFormat, const OP_Inputs* inputs, TOP_Context* context, void *reserved1)
 {
 	int memLocation = 0;
 	float*	mem = (float*)outputFormat->cpuPixelData[memLocation];
-	OP_TOPInput const* input_ = inputs->getInputTOP(0);
+	OP_TOPInput const* inputTOP = inputs->getInputTOP(0);
 	
-	if (input_ != nullptr)
+	if (inputTOP != nullptr)
 	{
 		OP_TOPInputDownloadOptions options;
 		options.downloadType = OP_TOPInputDownloadType::Instant;
 		options.cpuMemPixelType = OP_CPUMemPixelType::RGBA32Float;
 		options.verticalFlip = false;
 		
-		float const* src = (float const*)inputs->getTOPDataInCPUMemory(input_, &options);
+		float const* src = (float const*)inputs->getTOPDataInCPUMemory(inputTOP, &options);
 
 		if (src != nullptr)
 		{
 			m_mult = (float)inputs->getParDouble("Color");
-			for (int y = 0; y < input_->height; y++)
+			for (int y = 0; y < inputTOP->height; y++)
 			{
-				for (int x = 0; x < input_->width; x++)
+				for (int x = 0; x < inputTOP->width; x++)
 				{
-					int pixelIndex = (y * input_->width + x) * sizeof(float);
+					int pixelIndex = (y * inputTOP->width + x) * sizeof(float);
 					mem[pixelIndex + 0] = src[pixelIndex + 0] * m_mult;
 					mem[pixelIndex + 1] = src[pixelIndex + 1] * m_mult;
 					mem[pixelIndex + 2] = src[pixelIndex + 2] * m_mult;
@@ -54,7 +54,7 @@ void PixelSortTOP::execute( TOP_OutputFormatSpecs* outputFormat, const OP_Inputs
 	outputFormat->newCPUPixelDataLocation = memLocation;
 }
 
-void	PixelSortTOP::setupParameters( OP_ParameterManager* manager, void* reserver1 )
+void	CppTOP::setupParameters( OP_ParameterManager* manager, void* reserver1 )
 {
 	// Colour multiplier
 	{
@@ -74,7 +74,7 @@ void	PixelSortTOP::setupParameters( OP_ParameterManager* manager, void* reserver
 	}
 }
 
-void	PixelSortTOP::pulsePressed( char const* name, void* reserved1 )
+void	CppTOP::pulsePressed( char const* name, void* reserved1 )
 {
 }
 
@@ -94,11 +94,11 @@ extern "C"
 	
 	DLLEXPORT TOP_CPlusPlusBase* CreateTOPInstance( const OP_NodeInfo* info, TOP_Context* context )
 	{
-		return new PixelSortTOP(info);
+		return new CppTOP(info);
 	}
 	
 	DLLEXPORT void DestroyTOPInstance( TOP_CPlusPlusBase* instance, TOP_Context* context )
 	{
-		delete (PixelSortTOP*)instance;
+		delete (CppTOP*)instance;
 	}
 }
