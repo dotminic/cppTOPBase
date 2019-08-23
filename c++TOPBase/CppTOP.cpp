@@ -102,5 +102,3 @@ extern "C"
 		delete (PixelSortTOP*)instance;
 	}
 }
-
-
